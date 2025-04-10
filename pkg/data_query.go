@@ -51,6 +51,7 @@ func (s *dbserver) Query(ctx context.Context, query *server.DataQuery) (result *
 		esQuery(ctx, db, []string{query.Key}, query.Sql, result)
 	}()
 
+	fmt.Printf("index: %s, esql: %s\n", query.Key, query.Sql)
 	// query data
 	if query.Sql == "" {
 		return
@@ -67,8 +68,11 @@ func (s *dbserver) Query(ctx context.Context, query *server.DataQuery) (result *
 }
 
 func esQuery(ctx context.Context, db *elasticsearch.Client, index []string, sql string, dataResult *server.DataQueryResult) (result *server.DataQueryResult, err error) {
-	resp, err := db.Indices.Get([]string{"*"})
-	if !resp.IsError() {
+	var resp *esapi.Response
+	resp, err = db.Indices.Get([]string{"*"})
+	if err != nil {
+		return
+	} else if !resp.IsError() {
 		var r map[string]interface{}
 		if err = json.NewDecoder(resp.Body).Decode(&r); err == nil {
 			for k := range r {
@@ -159,7 +163,7 @@ func sqlQuery(ctx context.Context, index []string, sql string, db *elasticsearch
 	if res.IsError() {
 		var e map[string]interface{}
 		if err = json.NewDecoder(res.Body).Decode(&e); err != nil {
-			err = fmt.Errorf("Error parsing the response body: %v", err)
+			err = fmt.Errorf("error parsing the response body: %v", err)
 		} else {
 			// Print the response status and error information.
 			err = fmt.Errorf("[%s] %s: %s",

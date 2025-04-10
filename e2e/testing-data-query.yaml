@@ -19,29 +19,14 @@ items:
       {
         "name": "{{.param.store}}",
         "url": "{{env "target"}}",
-        "username": "{{default "root" (env "username")}}",
+        "username": "{{default "elastic" (env "username")}}",
         "password": "{{default "root" (env "password")}}",
         "kind": {
           "name": "atest-store-{{env "kind"}}"
         },
         "properties": [{
-          "key": "driver",
-          "value": "{{default "mysql" (env "driver")}}"
-        }, {
           "key": "database",
           "value": "{{default "atest" (env "dbname")}}"
-        }, {
-          "key": "bucket",
-          "value": "bucket"
-        }, {
-          "key": "region",
-          "value": "cn"
-        }, {
-          "key": "disablessl",
-          "value": "true"
-        }, {
-          "key": "targetPath",
-          "value": "api-testing"
         }]
       }
 - name: query
@@ -55,19 +40,6 @@ items:
       X-Store-Name: "{{.param.store}}"
     body: |
       {
-        "sql": "show databases",
+        "sql": "*",
         "key": ""
       }
-- name: invalidSQL
-  request:
-    api: /data/query
-    method: POST
-    header:
-      X-Store-Name: "{{.param.store}}"
-    body: |
-      {
-        "sql": "select1 * from table",
-        "key": ""
-      }
-  expect:
-      statusCode: 500

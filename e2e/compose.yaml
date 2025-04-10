@@ -33,7 +33,7 @@ services:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9200"]
       interval: 3s
       timeout: 30s
-      retries: 10
+      retries: 60
     ports:
       - 9200
 volumes:

@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"regexp"
 	"slices"
 	"strings"
 	"sync"
@@ -133,16 +134,27 @@ func createSearchRequests(ctx context.Context, db *elasticsearch.Client, index [
 		db.Search.WithIndex(index...),
 		db.Search.WithPretty(),
 	}
-	if sql == "" {
-		searchRequests = append(searchRequests, db.Search.WithBody(strings.NewReader(`{
+	// https://www.elastic.co/guide/en/kibana/current/lucene-query.html
+	if !isLuceneQuery(sql) {
+		searchRequests = append(searchRequests, db.Search.WithBody(strings.NewReader(fmt.Sprintf(`{
 			"query": {
-				"match_all": {}
+				"wildcard": {
+					"content": {
+						"value": "%s"
+					}
+				}
 			}
-		}`)))
+		}`, sql))))
 	} else {
 		searchRequests = append(searchRequests, db.Search.WithQuery(sql))
 	}
 	return searchRequests
+}
+
+func isLuceneQuery(query string) bool {
+	pattern := `^[\w\s:(),\"\'\-\+\*\?\[\]\{\}\^\"~!@#\$%\^&\|<>/\\=]+`
+	matched, _ := regexp.MatchString(pattern, query)
+	return matched
 }
 
 func sqlQuery(ctx context.Context, index []string, sql string, db *elasticsearch.Client) (result *server.DataQueryResult, err error) {
@@ -160,6 +172,7 @@ func sqlQuery(ctx context.Context, index []string, sql string, db *elasticsearch
 		return
 	}
 
+	fmt.Println("status code", res.StatusCode)
 	if res.IsError() {
 		var e map[string]interface{}
 		if err = json.NewDecoder(res.Body).Decode(&e); err != nil {
@@ -181,6 +194,7 @@ func sqlQuery(ctx context.Context, index []string, sql string, db *elasticsearch
 		return
 	}
 
+	fmt.Println("response:", r)
 	for _, hit := range r["hits"].(map[string]interface{})["hits"].([]interface{}) {
 		for k, v := range hit.(map[string]interface{}) {
 			rowData := &server.Pair{Key: k, Value: fmt.Sprintf("%v", v)}

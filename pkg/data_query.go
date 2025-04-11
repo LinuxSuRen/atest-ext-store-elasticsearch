@@ -101,11 +101,46 @@ func esQuery(ctx context.Context, db *elasticsearch.Client, index []string, sql 
 			Value: fmt.Sprintf("%d", response.Count),
 		})
 	}
+
+	if resp, err = db.Cat.Indices(
+		db.Cat.Indices.WithFormat("json"),
+		db.Cat.Indices.WithIndex(index...),
+		db.Cat.Indices.WithContext(ctx),
+		db.Cat.Indices.WithH("health", "store.size"),
+	); err == nil {
+		var body []byte
+		body, err = io.ReadAll(resp.Body)
+		if err != nil {
+			return
+		}
+
+		var response []IndicesResponse
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return
+		}
+		if len(response) > 0 {
+			dataResult.Meta.Labels = append(dataResult.Meta.Labels, &server.Pair{
+				Key:   "health",
+				Value: response[0].Health,
+			})
+			dataResult.Meta.Labels = append(dataResult.Meta.Labels, &server.Pair{
+				Key:   "size",
+				Value: response[0].StoreSize,
+			})
+		}
+	}
 	return
 }
 
 type CountResponse struct {
 	Count int `json:"count"`
+}
+
+type IndicesResponse struct {
+	Index     string `json:"index"`
+	Health    string `json:"health"`
+	StoreSize string `json:"store.size"`
 }
 
 func createCountRequests(ctx context.Context, db *elasticsearch.Client, index []string, sql string) []func(*esapi.CountRequest) {
@@ -194,7 +229,6 @@ func sqlQuery(ctx context.Context, index []string, sql string, db *elasticsearch
 		return
 	}
 
-	fmt.Println("response:", r)
 	for _, hit := range r["hits"].(map[string]interface{})["hits"].([]interface{}) {
 		for k, v := range hit.(map[string]interface{}) {
 			rowData := &server.Pair{Key: k, Value: fmt.Sprintf("%v", v)}

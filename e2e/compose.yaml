@@ -25,17 +25,16 @@ services:
         - GOPROXY=${GOPROXY}
 
   elasticsearch:
-    image: ghcr.io/linuxsuren/apache/elasticsearch:1.3.2-standalone
+    image: ghcr.io/linuxsuren/library/elasticsearch:8.17.4
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: atest
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=root
     healthcheck:
-      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/6667"]
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9200"]
       interval: 3s
       timeout: 30s
-      retries: 10
+      retries: 60
     ports:
-      - 6667
+      - 9200
 volumes:
   cache:

@@ -8,6 +8,6 @@ mkdir -p /var/data
 echo "start to run server"
 nohup atest server&
 
-kind=elasticsearch target=elasticsearch driver=elasticsearch atest run -p testing-data-query.yaml
+kind=elasticsearch target=https://elasticsearch:9200 atest run -p testing-data-query.yaml
 
 cat /root/.config/atest/stores.yaml

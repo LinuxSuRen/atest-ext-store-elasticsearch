@@ -17,8 +17,10 @@ package pkg
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"log"
+	"net/http"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/linuxsuren/api-testing/pkg/extension"
@@ -49,6 +51,11 @@ func (s *dbserver) getClientWithDatabase(ctx context.Context) (client *elasticse
 			Addresses: []string{store.URL},
 			Username:  store.Username,
 			Password:  store.Password,
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+				},
+			},
 		}
 		client, err = elasticsearch.NewClient(cfg)
 	}

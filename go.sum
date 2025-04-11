@@ -128,6 +128,12 @@ github.com/linuxsuren/api-testing v0.0.19 h1:lDpXdJzqXZhxycZbGRVmKy7tMZqwk+1zUzg
 github.com/linuxsuren/api-testing v0.0.19/go.mod h1:igcyUJb5Q463tMpdEJxgURLLPR2pTcV7HoRyuvyP/2Y=
 github.com/linuxsuren/api-testing v0.0.20-0.20250331081733-9d3e7ad6d47b h1:4auUdm3mIzqXu/l0kA7/OpccLTENxgEq32W3gjBJ1Po=
 github.com/linuxsuren/api-testing v0.0.20-0.20250331081733-9d3e7ad6d47b/go.mod h1:igcyUJb5Q463tMpdEJxgURLLPR2pTcV7HoRyuvyP/2Y=
+github.com/linuxsuren/api-testing v0.0.20-0.20250411141829-3cd89d157c3b h1:QABWKn/4Agg1xdlFW6Lmn1tI79U9xQNZ/NcUzp3LdyE=
+github.com/linuxsuren/api-testing v0.0.20-0.20250411141829-3cd89d157c3b/go.mod h1:igcyUJb5Q463tMpdEJxgURLLPR2pTcV7HoRyuvyP/2Y=
+github.com/linuxsuren/api-testing v0.0.20-0.20250411143208-6fccc908933b h1:hgk4bdSTGWt/nBFUsR5Yj/GscWG1r1IKNUsITC8YAfo=
+github.com/linuxsuren/api-testing v0.0.20-0.20250411143208-6fccc908933b/go.mod h1:igcyUJb5Q463tMpdEJxgURLLPR2pTcV7HoRyuvyP/2Y=
+github.com/linuxsuren/api-testing v0.0.20-0.20250411152222-db22459df50b h1:3EJ0d2S/pha+m34hLSWK/DPkdyZOdsmFE+ocEpNVwVQ=
+github.com/linuxsuren/api-testing v0.0.20-0.20250411152222-db22459df50b/go.mod h1:igcyUJb5Q463tMpdEJxgURLLPR2pTcV7HoRyuvyP/2Y=
 github.com/linuxsuren/go-fake-runtime v0.0.4 h1:y+tvBuw6MKTCav8Bo5HWwaXhBx1Z//VAvqI3gpOWqvw=
 github.com/linuxsuren/go-fake-runtime v0.0.4/go.mod h1:zmh6J78hSnWZo68faMA2eKOdaEp8eFbERHi3ZB9xHCQ=
 github.com/linuxsuren/go-service v0.0.0-20231225060426-efabcd3a5161 h1:dSL/ah6zaRGqH3FW0ogtMjP6xCFXX5NsgWJTaNIofI4=

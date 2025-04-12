@@ -29,6 +29,7 @@ services:
     environment:
       - discovery.type=single-node
       - ELASTIC_PASSWORD=root
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     healthcheck:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9200"]
       interval: 3s

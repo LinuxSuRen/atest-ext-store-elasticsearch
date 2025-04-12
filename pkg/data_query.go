@@ -60,7 +60,7 @@ func (s *dbserver) Query(ctx context.Context, query *server.DataQuery) (result *
 
 	var dataResult *server.DataQueryResult
 	now := time.Now()
-	if dataResult, err = sqlQuery(ctx, []string{query.Key}, query.Sql, db); err == nil {
+	if dataResult, err = sqlQuery(ctx, query, db); err == nil {
 		result.Items = dataResult.Items
 		result.Meta.Duration = time.Since(now).String()
 	}
@@ -161,16 +161,19 @@ func createCountRequests(ctx context.Context, db *elasticsearch.Client, index []
 	return searchRequests
 }
 
-func createSearchRequests(ctx context.Context, db *elasticsearch.Client, index []string, sql string) []func(*esapi.SearchRequest) {
+func createSearchRequests(ctx context.Context, db *elasticsearch.Client, query *server.DataQuery) []func(*esapi.SearchRequest) {
 	searchRequests := []func(*esapi.SearchRequest){
 		db.Search.WithContext(ctx),
 		db.Search.WithSize(100),
 		db.Search.WithTrackTotalHits(true),
-		db.Search.WithIndex(index...),
+		db.Search.WithIndex(query.Key),
+		db.Search.WithFrom(int(query.Offset)),
+		db.Search.WithSize(int(query.Limit)),
 		db.Search.WithPretty(),
 	}
+
 	// https://www.elastic.co/guide/en/kibana/current/lucene-query.html
-	if !isLuceneQuery(sql) {
+	if !isLuceneQuery(query.Sql) {
 		searchRequests = append(searchRequests, db.Search.WithBody(strings.NewReader(fmt.Sprintf(`{
 			"query": {
 				"wildcard": {
@@ -179,9 +182,9 @@ func createSearchRequests(ctx context.Context, db *elasticsearch.Client, index [
 					}
 				}
 			}
-		}`, sql))))
+		}`, query.Sql))))
 	} else {
-		searchRequests = append(searchRequests, db.Search.WithQuery(sql))
+		searchRequests = append(searchRequests, db.Search.WithQuery(query.Sql))
 	}
 	return searchRequests
 }
@@ -192,15 +195,15 @@ func isLuceneQuery(query string) bool {
 	return matched
 }
 
-func sqlQuery(ctx context.Context, index []string, sql string, db *elasticsearch.Client) (result *server.DataQueryResult, err error) {
+func sqlQuery(ctx context.Context, query *server.DataQuery, db *elasticsearch.Client) (result *server.DataQueryResult, err error) {
 	result = &server.DataQueryResult{
 		Data:  []*server.Pair{},
 		Items: make([]*server.Pairs, 0),
 		Meta:  &server.DataMeta{},
 	}
 
-	fmt.Printf("query from index [%v], sql [%s]\n", index, sql)
-	searchRequests := createSearchRequests(ctx, db, index, sql)
+	fmt.Printf("query from index [%v], sql [%s]\n", query.Key, query.Sql)
+	searchRequests := createSearchRequests(ctx, db, query)
 
 	var res *esapi.Response
 	if res, err = db.Search(searchRequests...); err != nil {

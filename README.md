@@ -6,4 +6,8 @@ This project is a storage plugin for the [atest](https://github.com/linuxsuren/a
 
 - Seamless integration with the `api-testing` framework.
 - Web UI for interacting with Elasticsearch.
-- Lucence query
+- Lucene query or wildcard search
+
+## Screenshots
+
+![image](https://github.com/user-attachments/assets/f92e58e3-b4f6-4f51-bc02-e7fd348cbea5)

@@ -6,7 +6,7 @@ toolchain go1.23.8
 
 require (
 	github.com/apache/iotdb-client-go v1.3.3
-	github.com/linuxsuren/api-testing v0.0.20-0.20250331081733-9d3e7ad6d47b
+	github.com/linuxsuren/api-testing v0.0.20-0.20250411152222-db22459df50b
 	github.com/spf13/cobra v1.9.1
 	google.golang.org/protobuf v1.36.6
 )
@@ -106,3 +106,5 @@ require (
 	go.opentelemetry.io/otel/metric v1.28.0 // indirect
 	go.opentelemetry.io/otel/trace v1.28.0 // indirect
 )
+
+//replace github.com/linuxsuren/api-testing => ../api-testing
